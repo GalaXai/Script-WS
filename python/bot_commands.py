@@ -33,6 +33,10 @@ class OrderSystem:
     if not self.current_orders:
       return "No items in your order!"
 
+    # Check for Carbonara in delivery orders
+    if is_delivery and any(item["name"] == "Spaghetti Carbonara" for item in self.current_orders):
+      raise ValueError("Spaghetti Carbonara cannot be delivered! \n Please remove it from order if u want food on delivery.")
+
     total_price = sum(item["price"] for item in self.current_orders)
 
     base_prep_time = max(item["preparation_time"] for item in self.current_orders)
@@ -54,6 +58,23 @@ class OrderSystem:
       f"Estimated Time: {final_prep_time:.1f} hours\n"
       f"{'Delivery' if is_delivery else 'Take-out'} order"
     )
+
+  def remove_item(self, index: int) -> str:
+    if not self.current_orders:
+      return "No items in your order!"
+
+    if 0 <= index < len(self.current_orders):
+      removed_item = self.current_orders.pop(index)
+      if self.current_orders:
+        return f"Removed {removed_item['name']} from your order.\nCurrent order:\n" + self.format_current_order()
+      return f"Removed {removed_item['name']} from your order. Your order is now empty."
+    raise IndexError("Invalid item number")
+
+  def format_current_order(self) -> str:
+    order_list = ""
+    for idx, item in enumerate(self.current_orders, start=1):
+      order_list += f"{idx}. {item['name']}: ${item['price']:.2f}\n"
+    return order_list
 
 
 async def handle_order_command(message, order_system) -> str:

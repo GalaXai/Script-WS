@@ -22,8 +22,8 @@ Complete the following tasks (each task builds upon the previous ones):
 
 - [x] A chatbot with the trained ability to handle at least 3 ways to phrase the main intents.
 - [x] Information about opening hours and menu items should be fetched from the configuration file.
-- [ ] Chatbot needs to process the order and confirm purchased meals, as well as additional requests.
-- [ ] Chatbot needs to confirm when the meal will be available as a pick-up in the restaurant.
+- [x] Chatbot needs to process the order and confirm purchased meals, as well as additional requests.
+- [x] Chatbot needs to confirm when the meal will be available as a pick-up in the restaurant.
 - [ ] Chatbot should ask and confirm the delivery address instead of pick-up option.
 
 Requirements:

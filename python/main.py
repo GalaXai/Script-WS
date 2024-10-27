@@ -31,7 +31,6 @@ menu_items = data.get("menu", {})
 opening_hours = data.get("opening_hours", {})
 responses = data.get("responses", {})
 
-# Discord bot setup
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
@@ -55,6 +54,12 @@ def get_available_commands() -> str:
     "  › !order 2 Pizza\n"
     "  › !order 1 Burger\n"
     "  › !order 3\n\n"
+    "• **!current_order**\n"
+    "  *Show your current order*\n\n"
+    "• **!remove** <number>\n"
+    "  *Remove an item from your order by its number*\n"
+    "  Example:\n"
+    "  › !remove 1\n\n"
     "• **!done**\n"
     "  *Finish your order*"
   )
@@ -82,12 +87,16 @@ async def done(ctx):
 @bot.command()
 async def delivery(ctx):
   order_system = bot.order_systems.get(ctx.channel.id)
-  response = await handle_delivery_command(ctx.message, order_system, True)
-  await ctx.send(response)
-
-  # Lock the thread if message is in a thread
-  if hasattr(ctx.channel, "parent") and ctx.channel.parent:
-    await ctx.channel.edit(locked=True, auto_archive_duration=60)
+  try:
+    response = await handle_delivery_command(ctx.message, order_system, True)
+    await ctx.send(response)
+    greeting = random.choice(responses["farewells"])
+    await ctx.channel.send(greeting)
+    # Lock the thread if message is in a thread
+    if hasattr(ctx.channel, "parent") and ctx.channel.parent:
+      await ctx.channel.edit(locked=True, auto_archive_duration=60)
+  except ValueError as e:
+    await ctx.send(f"Error: {str(e)}")
 
 
 @bot.command()
@@ -95,10 +104,25 @@ async def takeout(ctx):
   order_system = bot.order_systems.get(ctx.channel.id)
   response = await handle_delivery_command(ctx.message, order_system, False)
   await ctx.send(response)
-
+  greeting = random.choice(responses["farewells"])
+  await ctx.channel.send(greeting)
   # Lock the thread if message is in a thread
   if hasattr(ctx.channel, "parent") and ctx.channel.parent:
     await ctx.channel.edit(locked=True, auto_archive_duration=60)
+
+
+@bot.command(name="current_order")
+async def show_current_order(ctx):
+  order_system = bot.order_systems.get(ctx.channel.id)
+  if not order_system:
+    await ctx.send("No active order found!")
+    return
+
+  response = order_system.format_current_order()
+  if not response:
+    await ctx.send("Your order is empty!")
+  else:
+    await ctx.send("Your current order:\n" + response)
 
 
 @bot.command()
@@ -136,6 +160,27 @@ async def menu(ctx):
   for idx, item in enumerate(menu_items, start=1):
     menu_list += f"{idx}. {item['name']}: ${item['price']:.2f}\n"
   await ctx.send(menu_list)
+
+
+@bot.command()
+async def remove(ctx, *args):
+  order_system = bot.order_systems.get(ctx.channel.id)
+  if not order_system:
+    await ctx.send("No active order found!")
+    return
+
+  try:
+    if not args:
+      await ctx.send("Please specify what item to remove. Example: !remove 1")
+      return
+
+    item_index = int(args[0]) - 1  # Convert to 0-based index
+    response = order_system.remove_item(item_index)
+    await ctx.send(response)
+  except ValueError:
+    await ctx.send("Please provide a valid item number from your order.")
+  except IndexError:
+    await ctx.send("That item number doesn't exist in your order.")
 
 
 @bot.event
