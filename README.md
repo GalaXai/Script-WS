@@ -16,6 +16,8 @@ script languages for univ workshop
 
 ## Discord Chatbot
 
+>This project might need a revisit to move it to LLM.
+
 Create a chatbot according to the description in https://github.com/codete/oreilly-intelligent-bots/blob/master/Homework.ipynb.
 
 Complete the following tasks (each task builds upon the previous ones):
