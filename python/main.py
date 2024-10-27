@@ -16,6 +16,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 
 from utils import load_data, get_full_day_name
+from bot_commands import handle_order_command, handle_done_command, handle_delivery_command, OrderSystem
 
 from datetime import datetime
 from typing import Optional
@@ -34,20 +35,70 @@ responses = data.get("responses", {})
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
+bot.order_systems = {}
 
 
 def get_available_commands() -> str:
   return (
-    "You can use the following commands:\n"
-    "!check_open [day] [hour] - Check our opening hours for a specific day and time, or just for today\n"
-    "  Examples: !check_open Monday 14, !check_open Mon, !check_open\n"
-    "!menu - View our menu items"
+    "**Available Commands:**\n\n"
+    "• **!check_open** [day] [hour]\n"
+    "  *Check opening hours for a specific day/time or today*\n"
+    "  Examples:\n"
+    "  › !check_open Monday 14\n"
+    "  › !check_open Mon\n"
+    "  › !check_open\n\n"
+    "• **!menu**\n"
+    "  *View our menu items*\n\n"
+    "• **!order** [amount] <item>\n"
+    "  *Order items by name or menu number*\n"
+    "  Examples:\n"
+    "  › !order 2 Pizza\n"
+    "  › !order 1 Burger\n"
+    "  › !order 3\n\n"
+    "• **!done**\n"
+    "  *Finish your order*"
   )
 
 
 @bot.event
 async def on_ready():
   print(f"{bot.user} has connected to Discord!")
+
+
+@bot.command()
+async def order(ctx, *args):
+  order_system = bot.order_systems.get(ctx.channel.id)
+  response = await handle_order_command(ctx.message, order_system)
+  await ctx.send(response)
+
+
+@bot.command()
+async def done(ctx):
+  order_system = bot.order_systems.get(ctx.channel.id)
+  response = await handle_done_command(ctx.message, order_system)
+  await ctx.send(response)
+
+
+@bot.command()
+async def delivery(ctx):
+  order_system = bot.order_systems.get(ctx.channel.id)
+  response = await handle_delivery_command(ctx.message, order_system, True)
+  await ctx.send(response)
+
+  # Lock the thread if message is in a thread
+  if hasattr(ctx.channel, "parent") and ctx.channel.parent:
+    await ctx.channel.edit(locked=True, auto_archive_duration=60)
+
+
+@bot.command()
+async def takeout(ctx):
+  order_system = bot.order_systems.get(ctx.channel.id)
+  response = await handle_delivery_command(ctx.message, order_system, False)
+  await ctx.send(response)
+
+  # Lock the thread if message is in a thread
+  if hasattr(ctx.channel, "parent") and ctx.channel.parent:
+    await ctx.channel.edit(locked=True, auto_archive_duration=60)
 
 
 @bot.command()
@@ -92,13 +143,23 @@ async def on_message(message):
   if message.author == bot.user:
     return
 
-  if bot.user.mentioned_in(message):
-    thread = await message.create_thread(name="Customer Order", auto_archive_duration=60)
+  if bot.user.mentioned_in(message) or isinstance(message.channel, discord.DMChannel):
+    # Create a thread only in guild channels, not in DMs
+    if isinstance(message.channel, discord.TextChannel):
+      thread = await message.create_thread(name="Customer Order", auto_archive_duration=60)
+      channel = thread
+    else:
+      channel = message.channel
+    order_system = OrderSystem(menu_items)
+    # Store it in the bot's state
+    bot.order_systems[thread.id] = order_system
 
+    # Send greeting
     greeting = random.choice(responses["greetings"])
-    await thread.send(greeting)
+    await channel.send(greeting)
 
-    await thread.send(get_available_commands())
+    # Always send available commands
+    await channel.send(get_available_commands())
 
   await bot.process_commands(message)
 
