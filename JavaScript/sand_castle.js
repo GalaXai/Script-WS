@@ -19,20 +19,27 @@ function sand_castle(side, height) {
   up(2)
   this.chkpt('sand_castle')
     .down(2)
-    .chessboard(blocks.wool.blue, blocks.wool.white, side+10)
+    .chessboard(blocks.water, blocks.water, side+10)
     .move('sand_castle')
     .fwd(towerSide / 2)
     .right(towerSide / 2)
     .fort_base(side, height)
+
+    .fwd(side -1)
+    .right(Math.floor(side/ 2) -5)
+    .up(3)
+    .box(blocks.glass_pane, 10, 3, 1)
     .move('sand_castle');
+
   // now place 4 towers at each corner (each tower is another fort)
   for (var corner = 0; corner < 4; corner++) {
     // construct a 'tower' fort
     this.fort_base(towerSide, towerHeight, false)
       .chkpt('tower-' + corner)
+      .up(towerHeight - 5) // create 2 doorways from main castle rampart into each tower
+      .box(blocks.glass, 3, 3, 3)
       .fwd(towerSide - 1)
       .right(towerSide - 3)
-      .up(towerHeight - 5) // create 2 doorways from main castle rampart into each tower
       .box(blocks.air, 1, 2, 1)
       .back(2)
       .right(2)
@@ -42,5 +49,6 @@ function sand_castle(side, height) {
       .turn();
   }
   this.move('sand_castle');
+  echo(self, "🏰 Your sand castle has been built!");
 }
 Drone.extend(sand_castle);

@@ -42,10 +42,10 @@ Requirements:
 >Create a castle in Minecraft using JavaScript scripting with the following features:
 
 - [x] Basic castle using at least 5 different block types
-- [ ] Minimum of 4 windows
+- [x] Minimum of 4 windows
 - [x] Moat and bridge
 - [x] Gate and minimum of 2 towers
-- [ ] Castle has at least two levels (floors) accessible from outside
+- [x] Castle has at least two levels (floors) accessible from outside
 
 
 # Ruby

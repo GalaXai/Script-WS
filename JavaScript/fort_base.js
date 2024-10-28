@@ -75,13 +75,23 @@ function fort_base(side, height, add_gate) {
       .right(side / 2 - gateWidth)
       // Create the arch
       .down(gateWidth)
+      .left(1)
       .arc({
-          blockType: blocks.air,
+        blockType: blocks.sandstone_red,
+        radius: radius+1,
+        orientation: 'vertical',
+        quadrants: {topright:true, topleft:true},
+        degrees: 180
+      })
+      .right(1)
+      .arc({
+          blockType: blocks.fence.oak,
           radius: radius,
           orientation: 'vertical',
           quadrants: {topright:true, topleft:true},
           degrees: 180
         })
+
         .up(1)
         .right(gateWidth/2)
         .box(blocks.air, gateWidth, gateHeight - 1, 1)
@@ -92,7 +102,7 @@ function fort_base(side, height, add_gate) {
       .right((side / 2) + 1)
       .down(1)
       .turn(2)
-      .box(blocks.brick.stone, 3,1,6)
+      .box(blocks.brick.stone, 3,1,9)
       .move('fort_base');
   }
   // add ladder up to battlements
