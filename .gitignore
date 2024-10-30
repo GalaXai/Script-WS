@@ -8,3 +8,4 @@ __pycache__
 # Lua
 logs/
 *_temp/
+*.db

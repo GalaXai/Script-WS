@@ -1,19 +1,12 @@
 lapis = require "lapis"
-import ProductsApplication from require "applications.products"
 import Products from require "models"
-import respond_to, json_params from require "lapis.application"
+import respond_to from require "lapis.application"
+import json_params from require "lapis.application"
 
-class Application extends lapis.Application
-  -- Root route
-  "/": =>
-    "Welcome to Lapis #{require "lapis.version"}!"
-
-  -- Product Routes
-  -- GET /products - List all products
-  -- POST /products - Create new product
+class ProductsApplication extends lapis.Application
   [index: "/products"]: respond_to {
     GET: =>
-      products = Products\select ""
+      products = Products\select ""  -- Get all products
       json: { success: true, products: products }
 
     POST: json_params =>
@@ -26,10 +19,6 @@ class Application extends lapis.Application
       json: { success: true, product: product }
   }
 
-  -- Single Product Routes
-  -- GET /products/:id - Get single product
-  -- PUT /products/:id - Update product
-  -- DELETE /products/:id - Delete product
   [show: "/products/:id"]: respond_to {
     GET: =>
       product = Products\find @params.id
@@ -56,4 +45,4 @@ class Application extends lapis.Application
       json: { success: true, message: "Product deleted" }
   }
 
-return Application
+return ProductsApplication

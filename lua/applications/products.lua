@@ -1,21 +1,15 @@
 local lapis = require("lapis")
-local ProductsApplication
-ProductsApplication = require("applications.products").ProductsApplication
 local Products
 Products = require("models").Products
-local respond_to, json_params
-do
-  local _obj_0 = require("lapis.application")
-  respond_to, json_params = _obj_0.respond_to, _obj_0.json_params
-end
-local Application
+local respond_to
+respond_to = require("lapis.application").respond_to
+local json_params
+json_params = require("lapis.application").json_params
+local ProductsApplication
 do
   local _class_0
   local _parent_0 = lapis.Application
   local _base_0 = {
-    ["/"] = function(self)
-      return "Welcome to Lapis " .. tostring(require("lapis.version")) .. "!"
-    end,
     [{
       index = "/products"
     }] = respond_to({
@@ -113,7 +107,7 @@ do
       return _class_0.__parent.__init(self, ...)
     end,
     __base = _base_0,
-    __name = "Application",
+    __name = "ProductsApplication",
     __parent = _parent_0
   }, {
     __index = function(cls, name)
@@ -137,6 +131,6 @@ do
   if _parent_0.__inherited then
     _parent_0.__inherited(_parent_0, _class_0)
   end
-  Application = _class_0
+  ProductsApplication = _class_0
 end
-return Application
+return ProductsApplication
