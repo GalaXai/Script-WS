@@ -57,7 +57,7 @@ Requirements:
 - [x] Models created using lapis.db.model
 - [x] Implementation in MoonScript
 - [x] Product image storage in Google Cloud Storage
-- [ ] API tests using lua-cjson and luasocket
+- [x] API tests
 
 Example product image: \
 ![Product Example](https://commondatastorage.googleapis.com/scipt-ws/product_2_1730404024.jpg)
