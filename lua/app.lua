@@ -6,11 +6,111 @@ do
   local _obj_0 = require("lapis.application")
   respond_to, json_params = _obj_0.respond_to, _obj_0.json_params
 end
+local google = require("cloud_storage.google")
 local Application
 do
   local _class_0
   local _parent_0 = lapis.Application
   local _base_0 = {
+    [{
+      test_storage = "/test-storage"
+    }] = function(self)
+      print("Testing Google Cloud Storage connection")
+      self.storage = google.CloudStorage:from_json_key_file("gcp_key.json")
+      self.bucket_name = "scipt-ws"
+      local success, result = pcall(function()
+        local files = self.storage:get_bucket(self.bucket_name)
+        if files then
+          return {
+            success = true,
+            files = files
+          }
+        else
+          return {
+            success = false,
+            error = "Could not fetch bucket contents"
+          }
+        end
+      end)
+      if success then
+        return {
+          json = result
+        }
+      else
+        return {
+          json = {
+            success = false,
+            error = "Storage error: " .. tostring(result)
+          }
+        }
+      end
+    end,
+    [{
+      upload_image = "/products/:id/image"
+    }] = respond_to({
+      PUT = json_params(function(self)
+        print("Processing image upload for product " .. tostring(self.params.id))
+        self.storage = google.CloudStorage:from_json_key_file("gcp_key.json")
+        self.bucket_name = "scipt-ws"
+        local product = Products:find(self.params.id)
+        if not (product) then
+          return {
+            json = {
+              success = false,
+              error = "Product not found"
+            }
+          }
+        end
+        local image_data = self.params.image
+        if not (image_data) then
+          return {
+            json = {
+              success = false,
+              error = "No image data provided"
+            }
+          }
+        end
+        image_data = image_data:gsub("^data:image/[^;]+;base64,", "")
+        image_data = image_data:gsub("%s+", "")
+        local success, binary_data = pcall(function()
+          return require("mime").unb64(image_data)
+        end)
+        if not (success and binary_data) then
+          return {
+            json = {
+              success = false,
+              error = "Invalid base64 image data"
+            }
+          }
+        end
+        local timestamp = os.time()
+        local filename = "product_" .. tostring(product.id) .. "_" .. tostring(timestamp) .. ".jpg"
+        print("Uploading file: " .. tostring(filename))
+        local err
+        success, err = self.storage:put_file_string(self.bucket_name, filename, binary_data, {
+          mimetype = "image/jpeg",
+          cache_control = "public, max-age=31536000"
+        })
+        if success then
+          local image_url = self.storage:file_url(self.bucket_name, filename)
+          print("Upload successful. URL: " .. tostring(image_url))
+          return {
+            json = {
+              success = true,
+              image_url = image_url
+            }
+          }
+        else
+          print("Upload failed: " .. tostring(err))
+          return {
+            json = {
+              success = false,
+              error = "Failed to upload image: " .. tostring(err)
+            }
+          }
+        end
+      end)
+    }),
     ["/"] = function(self)
       print("hello-app-index")
       return "Welcome to Lapis " .. tostring(require("lapis.version")) .. "!"
