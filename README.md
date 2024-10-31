@@ -16,7 +16,7 @@ script languages for univ workshop
 
 ## Discord Chatbot
 
->This project might need a revisit to move it to LLM.
+>This project might need a revisit to move it to LLM (Maybe LLamma 3/1B + func calling?).
 
 Create a chatbot according to the description in https://github.com/codete/oreilly-intelligent-bots/blob/master/Homework.ipynb.
 
@@ -47,7 +47,22 @@ Requirements:
 - [x] Gate and minimum of 2 towers
 - [x] Castle has at least two levels (floors) accessible from outside
 
+# Lua
+
+## Shop REST API
+
+>Create a REST API using Lapis framework in Lua/MoonScript with the following features:
+
+- [x] CRUD endpoints for categories and products returned as JSON
+- [x] Models created using lapis.db.model
+- [x] Implementation in MoonScript
+- [x] Product image storage in Google Cloud Storage
+- [ ] API tests using lua-cjson and luasocket
+
+Example product image: \
+![Product Example](https://commondatastorage.googleapis.com/scipt-ws/product_2_1730404024.jpg)
+```
+https://commondatastorage.googleapis.com/scipt-ws/product_2_1730404024.jpg
+```
 
 # Ruby
-
-# Lua

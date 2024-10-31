@@ -8,4 +8,5 @@ __pycache__
 # Lua
 logs/
 *_temp/
+gcp_key.json
 *.db
