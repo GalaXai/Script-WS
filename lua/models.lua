@@ -12,8 +12,8 @@ do
         id = self.id,
         name = self.name,
         description = self.description,
-        price = self.price,
-        stock = self.stock,
+        price = tonumber(self.price),
+        stock = tonumber(self.stock),
         created_at = self.created_at,
         updated_at = self.updated_at
       }

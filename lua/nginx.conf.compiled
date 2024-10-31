@@ -1,4 +1,4 @@
-env LAPIS_ENVIRONMENT=development;
+env LAPIS_ENVIRONMENT=test;
 worker_processes 1;
 error_log stderr notice;
 daemon off;
@@ -9,6 +9,40 @@ events {
 }
 
 http {
+      server {
+        allow 127.0.0.1;
+        deny all;
+        listen 40035;
+
+        location = /run_lua {
+          client_body_buffer_size 10m;
+          client_max_body_size 10m;
+          content_by_lua "
+                  ngx.req.read_body()
+
+      -- hijack print to write to buffer
+      local old_print = print
+
+      local buffer = {}
+      print = function(...)
+        local str = table.concat({...}, \"\\t\")
+        io.stdout:write(str .. \"\\n\")
+        table.insert(buffer, str)
+      end
+
+      local success, err = pcall(loadstring(ngx.var.request_body))
+
+      if not success then
+        ngx.status = 500
+        print(err)
+      end
+
+      ngx.print(table.concat(buffer, \"\\n\"))
+      print = old_print
+              ";
+        }
+      }
+
   include mime.types;
 
   init_by_lua_block {
@@ -16,7 +50,7 @@ http {
   }
 
   server {
-    listen 8080;
+    listen 43159;
     lua_code_cache off;
 
     location / {

@@ -26,8 +26,8 @@ class Products extends Model
         id: @id
         name: @name
         description: @description
-        price: @price
-        stock: @stock
+        price: tonumber(@price)
+        stock: tonumber(@stock)
         created_at: @created_at
         updated_at: @updated_at
     }
