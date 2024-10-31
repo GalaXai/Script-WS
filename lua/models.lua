@@ -73,9 +73,23 @@ do
       "PRIMARY KEY (id)"
     })
   end
+  self.serialize = function(self)
+    return {
+      id = self.id,
+      name = self.name,
+      description = self.description,
+      price = self.price,
+      stock = self.stock,
+      created_at = self.created_at,
+      updated_at = self.updated_at
+    }
+  end
   if _parent_0.__inherited then
     _parent_0.__inherited(_parent_0, _class_0)
   end
   Products = _class_0
 end
-return autoload("models")
+autoload("models")
+return {
+  Products = Products
+}

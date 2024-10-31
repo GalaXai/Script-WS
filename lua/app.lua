@@ -1,6 +1,4 @@
 local lapis = require("lapis")
-local ProductsApplication
-ProductsApplication = require("applications.products").ProductsApplication
 local Products
 Products = require("models").Products
 local respond_to, json_params
@@ -14,31 +12,46 @@ do
   local _parent_0 = lapis.Application
   local _base_0 = {
     ["/"] = function(self)
+      print("hello-app-index")
       return "Welcome to Lapis " .. tostring(require("lapis.version")) .. "!"
     end,
     [{
       index = "/products"
     }] = respond_to({
       GET = function(self)
-        local products = Products:select("")
+        print("hello-app-products")
+        print("Products:")
+        local products = Products:select()
+        print("HERE ARE YOUR SERIALIZED PRODUCTS")
         return {
           json = {
             success = true,
-            products = products
+            products = (function()
+              local _accum_0 = { }
+              local _len_0 = 1
+              for _index_0 = 1, #products do
+                local product = products[_index_0]
+                _accum_0[_len_0] = product:serialize()
+                _len_0 = _len_0 + 1
+              end
+              return _accum_0
+            end)()
           }
         }
       end,
       POST = json_params(function(self)
-        local product = Products:create({
+        print("hello-app-products-post")
+        Products:create({
           name = self.params.name,
           description = self.params.description,
           price = self.params.price,
           stock = self.params.stock
         })
+        print("Created product")
         return {
           json = {
             success = true,
-            product = product
+            message = "Product created successfully"
           }
         }
       end)

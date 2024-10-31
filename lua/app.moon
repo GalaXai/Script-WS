@@ -1,11 +1,12 @@
 lapis = require "lapis"
-import ProductsApplication from require "applications.products"
 import Products from require "models"
 import respond_to, json_params from require "lapis.application"
 
 class Application extends lapis.Application
   -- Root route
+  -- Struggle to get import working with endpoints.
   "/": =>
+    print "hello-app-index"
     "Welcome to Lapis #{require "lapis.version"}!"
 
   -- Product Routes
@@ -13,17 +14,28 @@ class Application extends lapis.Application
   -- POST /products - Create new product
   [index: "/products"]: respond_to {
     GET: =>
-      products = Products\select ""
-      json: { success: true, products: products }
+      print "hello-app-products"
+      print "Products:"  -- Add this debug line
+      products = Products\select!
+      print "HERE ARE YOUR SERIALIZED PRODUCTS"
+      -- print serialized products
+      json: { success: true, products: [product\serialize! for product in *products] }
 
     POST: json_params =>
-      product = Products\create {
+      print "hello-app-products-post"
+
+      Products\create {
         name: @params.name
         description: @params.description
         price: @params.price
         stock: @params.stock
       }
-      json: { success: true, product: product }
+
+      print "Created product"
+      json: {
+        success: true,
+        message: "Product created successfully"
+      }
   }
 
   -- Single Product Routes
