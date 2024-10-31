@@ -44,11 +44,14 @@ class Application extends lapis.Application
   -- DELETE /products/:id - Delete product
   [show: "/products/:id"]: respond_to {
     GET: =>
+      print "hello-app-product-get"
       product = Products\find @params.id
       return json: { success: false, error: "Product not found" } unless product
-      json: { success: true, product: product }
+      print "Found product:"
+      json: { success: true, product: product\serialize! }
 
     PUT: json_params =>
+      print "hello-app-product-put"
       product = Products\find @params.id
       return json: { success: false, error: "Product not found" } unless product
 
@@ -58,13 +61,16 @@ class Application extends lapis.Application
         price: @params.price
         stock: @params.stock
       }
-      json: { success: true, product: product }
+      print "Updated product"
+      json: { success: true, product: product\serialize! }
 
     DELETE: =>
+      print "hello-app-product-delete"
       product = Products\find @params.id
       return json: { success: false, error: "Product not found" } unless product
 
       product\delete!
+      print "Deleted product"
       json: { success: true, message: "Product deleted" }
   }
 

@@ -21,7 +21,7 @@ class Products extends Model
       "PRIMARY KEY (id)"
     }
 
-  @serialize: =>
+  serialize: =>
     {
         id: @id
         name: @name

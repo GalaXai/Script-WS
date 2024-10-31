@@ -60,6 +60,7 @@ do
       show = "/products/:id"
     }] = respond_to({
       GET = function(self)
+        print("hello-app-product-get")
         local product = Products:find(self.params.id)
         if not (product) then
           return {
@@ -69,14 +70,16 @@ do
             }
           }
         end
+        print("Found product:")
         return {
           json = {
             success = true,
-            product = product
+            product = product:serialize()
           }
         }
       end,
       PUT = json_params(function(self)
+        print("hello-app-product-put")
         local product = Products:find(self.params.id)
         if not (product) then
           return {
@@ -92,14 +95,16 @@ do
           price = self.params.price,
           stock = self.params.stock
         })
+        print("Updated product")
         return {
           json = {
             success = true,
-            product = product
+            product = product:serialize()
           }
         }
       end),
       DELETE = function(self)
+        print("hello-app-product-delete")
         local product = Products:find(self.params.id)
         if not (product) then
           return {
@@ -110,6 +115,7 @@ do
           }
         end
         product:delete()
+        print("Deleted product")
         return {
           json = {
             success = true,

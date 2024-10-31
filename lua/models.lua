@@ -6,7 +6,19 @@ local Products
 do
   local _class_0
   local _parent_0 = Model
-  local _base_0 = { }
+  local _base_0 = {
+    serialize = function(self)
+      return {
+        id = self.id,
+        name = self.name,
+        description = self.description,
+        price = self.price,
+        stock = self.stock,
+        created_at = self.created_at,
+        updated_at = self.updated_at
+      }
+    end
+  }
   _base_0.__index = _base_0
   setmetatable(_base_0, _parent_0.__base)
   _class_0 = setmetatable({
@@ -72,17 +84,6 @@ do
       },
       "PRIMARY KEY (id)"
     })
-  end
-  self.serialize = function(self)
-    return {
-      id = self.id,
-      name = self.name,
-      description = self.description,
-      price = self.price,
-      stock = self.stock,
-      created_at = self.created_at,
-      updated_at = self.updated_at
-    }
   end
   if _parent_0.__inherited then
     _parent_0.__inherited(_parent_0, _class_0)
