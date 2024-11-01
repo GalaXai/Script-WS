@@ -1,0 +1,13 @@
+# frozen_string_literal: true
+
+source "https://rubygems.org"
+
+gem "nokogiri"        # HTML parsing
+gem "httparty"        # HTTP client
+gem "sequel"          # Database ORM
+gem "sqlite3"         # SQLite database driver
+gem 'ruby-2captcha'   # Captcha solver
+gem "logger"          # For logging (part of Ruby stdlib)
+gem "dotenv"
+gem "base64"
+gem "ostruct"

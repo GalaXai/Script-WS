@@ -1,0 +1,71 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    base64 (0.2.0)
+    bigdecimal (3.1.8)
+    csv (3.3.0)
+    dotenv (3.1.4)
+    httparty (0.22.0)
+      csv
+      mini_mime (>= 1.0.0)
+      multi_xml (>= 0.5.2)
+    logger (1.6.1)
+    mini_mime (1.1.5)
+    multi_xml (0.7.1)
+      bigdecimal (~> 3.1)
+    nokogiri (1.16.7-aarch64-linux)
+      racc (~> 1.4)
+    nokogiri (1.16.7-arm-linux)
+      racc (~> 1.4)
+    nokogiri (1.16.7-arm64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.16.7-x86-linux)
+      racc (~> 1.4)
+    nokogiri (1.16.7-x86_64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.16.7-x86_64-linux)
+      racc (~> 1.4)
+    ostruct (0.6.0)
+    racc (1.8.1)
+    ruby-2captcha (1.1.5)
+    sequel (5.85.0)
+      bigdecimal
+    sqlite3 (2.2.0-aarch64-linux-gnu)
+    sqlite3 (2.2.0-aarch64-linux-musl)
+    sqlite3 (2.2.0-arm-linux-gnu)
+    sqlite3 (2.2.0-arm-linux-musl)
+    sqlite3 (2.2.0-arm64-darwin)
+    sqlite3 (2.2.0-x86-linux-gnu)
+    sqlite3 (2.2.0-x86-linux-musl)
+    sqlite3 (2.2.0-x86_64-darwin)
+    sqlite3 (2.2.0-x86_64-linux-gnu)
+    sqlite3 (2.2.0-x86_64-linux-musl)
+
+PLATFORMS
+  aarch64-linux
+  aarch64-linux-gnu
+  aarch64-linux-musl
+  arm-linux
+  arm-linux-gnu
+  arm-linux-musl
+  arm64-darwin
+  x86-linux
+  x86-linux-gnu
+  x86-linux-musl
+  x86_64-darwin
+  x86_64-linux-gnu
+  x86_64-linux-musl
+
+DEPENDENCIES
+  base64
+  dotenv
+  httparty
+  logger
+  nokogiri
+  ostruct
+  ruby-2captcha
+  sequel
+  sqlite3
+
+BUNDLED WITH
+   2.5.22

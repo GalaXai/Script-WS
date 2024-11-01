@@ -57,7 +57,7 @@ Requirements:
 - [x] Models created using lapis.db.model
 - [x] Implementation in MoonScript
 - [x] Product image storage in Google Cloud Storage
-- [x] API tests
+- [x] API testsl
 
 Example product image: \
 ![Product Example](https://commondatastorage.googleapis.com/scipt-ws/product_2_1730404024.jpg)
@@ -66,3 +66,13 @@ https://commondatastorage.googleapis.com/scipt-ws/product_2_1730404024.jpg
 ```
 
 # Ruby
+
+## Product Crawler
+
+>Create a product crawler for Allegro using Ruby and Nokogiri library with the following features:
+
+- [ ] Basic product data scraping (title, price) from any category
+- [ ] Product data scraping based on keywords
+- [ ] Extended product data scraping from individual product pages
+- [ ] Save product links
+- [ ] Store data in SQLite database using Sequel
