@@ -59,12 +59,6 @@ Requirements:
 - [x] Product image storage in Google Cloud Storage
 - [x] API testsl
 
-Example product image: \
-![Product Example](https://commondatastorage.googleapis.com/scipt-ws/product_2_1730404024.jpg)
-```
-https://commondatastorage.googleapis.com/scipt-ws/product_2_1730404024.jpg
-```
-
 # Ruby
 
 ## Product Crawler
