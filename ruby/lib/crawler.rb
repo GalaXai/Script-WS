@@ -1,10 +1,8 @@
 require 'nokogiri'
 require 'httparty'
 require_relative '../db/db_setup'
-require 'dotenv'
 
 class Crawler
-  Dotenv.load
   BASE_URL = 'https://www.amazon.pl/'
 
   def initialize
@@ -34,21 +32,25 @@ class Crawler
     nil
   end
 
-  def scrape_category(category)
+  def scrape_category(category, keyword = nil, n_searches = -1)
     category_url = "#{BASE_URL}/#{category}"
     page = fetch_page(category_url)
     return [] unless page
 
-    # Find all product containers
-    products = page.css('div[data-asin]:not([data-asin=""])').first(1)
-    products.map do |product|
+      if n_searches == -1
+        products = page.css('div[data-asin]:not([data-asin=""])')
+      else
+        products = page.css('div[data-asin]:not([data-asin=""])').first(n_searches)
+      end
+
+      products.map do |product|
       product_url = ensure_full_url(product.css('h2 .a-link-normal').first['href'])
 
       # Extract for product_url
       product_page = fetch_page(product_url)
       product_details = scrape_product_details(product_page) if product_page
 
-      {
+      product_data = {
         asin: product['data-asin'],
         title: product.css('h2 .a-link-normal span.a-text-normal').text.strip,
         price: product.css('.a-price .a-offscreen').first&.text,
@@ -58,10 +60,29 @@ class Crawler
         image_url: product.css('.s-image').first['src'],
         details: product_details || {}
       }
-    end
+
+      # Check if keyword in
+      keyword.nil? ? product_data : matches_keyword?(product_data, keyword)
+    end.compact # Removes nil entries
   end
 
   private
+
+  def matches_keyword?(product_data, keyword)
+    keyword = keyword.downcase
+
+    # Check in title
+    return product_data if product_data[:title].downcase.include?(keyword)
+
+    # Check in product details
+    product_data[:details].each do |_section_title, details|
+      details.each do |_key, value|
+        return product_data if value.downcase.include?(keyword)
+      end
+    end
+
+    nil
+  end
 
   def scrape_product_details(product_page)
     product_details = {}
@@ -93,14 +114,16 @@ class Crawler
 end
 
 CATEGORY = 's?k=laptops'
+KEYWORD = 'amd ryzen'
+N = 10
 crawler = Crawler.new
 
-results = crawler.scrape_category(CATEGORY)
+results = crawler.scrape_category(CATEGORY, KEYWORD, N)
 puts "Found #{results.length} products total"
-puts "\nFirst 10 products:"
+puts "\nFirst #{N} products:"
 puts "-----------------"
 
-results.first(10).each_with_index do |product, index|
+results.first(N).each_with_index do |product, index|
   puts "\n#{index + 1}. #{product[:title]}"
   puts "   Price: #{product[:price]}"
   puts "   Rating: #{product[:rating]} (#{product[:reviews_count]} reviews)"
