@@ -1,12 +1,10 @@
 require 'nokogiri'
 require 'httparty'
 require_relative '../db/db_setup'
-# require 'api_2captcha'
 require 'dotenv'
 
 class Crawler
   Dotenv.load
-  # client = Api2Captcha.new(ENV['2CAPTCHA'])
   BASE_URL = 'https://www.amazon.pl/'
 
   def initialize
@@ -40,7 +38,20 @@ class Crawler
     category_url = "#{BASE_URL}/#{category}"
     page = fetch_page(category_url)
     return [] unless page
-    print(page)
+
+    # Find all product containers
+    products = page.css('div[data-asin]:not([data-asin=""])')
+    products.map do |product|
+      {
+        asin: product['data-asin'],
+        title: product.css('h2 .a-link-normal span.a-text-normal').text.strip,
+        price: product.css('.a-price .a-offscreen').first&.text,
+        rating: product.css('i.a-icon-star-small .a-icon-alt').first&.text,
+        reviews_count: product.css('span[aria-label*="ocen"]').text.strip,
+        url: ensure_full_url(product.css('h2 .a-link-normal').first['href']),
+        image_url: product.css('.s-image').first['src']
+      }
+    end
   end
 
   private
@@ -53,4 +64,16 @@ end
 CATEGORY = 's?k=laptops'
 crawler = Crawler.new
 
-crawler.scrape_category(CATEGORY)
+results = crawler.scrape_category(CATEGORY)
+puts "Found #{results.length} products total"
+puts "\nFirst 10 products:"
+puts "-----------------"
+
+results.first(10).each_with_index do |product, index|
+  puts "\n#{index + 1}. #{product[:title]}"
+  puts "   Price: #{product[:price]}"
+  puts "   Rating: #{product[:rating]} (#{product[:reviews_count]} reviews)"
+  puts "   URL: #{product[:url]}"
+  puts "   ASIN: #{product[:asin]}"
+  puts "-----------------"
+end
