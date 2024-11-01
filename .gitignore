@@ -10,3 +10,7 @@ logs/
 *_temp/
 gcp_key.json
 *.db
+
+# ruby
+bundle/
+.bundle
