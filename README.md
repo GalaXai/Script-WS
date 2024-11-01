@@ -71,8 +71,8 @@ https://commondatastorage.googleapis.com/scipt-ws/product_2_1730404024.jpg
 
 >Create a product crawler for Allegro using Ruby and Nokogiri library with the following features:
 
-- [ ] Basic product data scraping (title, price) from any category
+- [x] Basic product data scraping (title, price) from any category
 - [ ] Product data scraping based on keywords
-- [ ] Extended product data scraping from individual product pages
-- [ ] Save product links
+- [x] Extended product data scraping from individual product pages
+- [x] Save product links
 - [ ] Store data in SQLite database using Sequel
