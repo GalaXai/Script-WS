@@ -26,7 +26,7 @@ Complete the following tasks (each task builds upon the previous ones):
 - [x] Information about opening hours and menu items should be fetched from the configuration file.
 - [x] Chatbot needs to process the order and confirm purchased meals, as well as additional requests.
 - [x] Chatbot needs to confirm when the meal will be available as a pick-up in the restaurant.
-- [ ] Chatbot should ask and confirm the delivery address instead of pick-up option.
+- [x] Chatbot should ask and confirm the delivery address instead of pick-up option.
 
 Requirements:
 - Answer the question if the restaurant is open on a given date/time
@@ -75,4 +75,4 @@ https://commondatastorage.googleapis.com/scipt-ws/product_2_1730404024.jpg
 - [x] Product data scraping based on keywords
 - [x] Extended product data scraping from individual product pages
 - [x] Save product links
-- [ ] Store data in SQLite database using Sequel
+- [x] Store data in SQLite database using Sequel

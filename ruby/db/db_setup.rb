@@ -1,15 +1,17 @@
 require 'sequel'
-require 'logger'
 
-DB = Sequel.connect('sqlite://db/products.db')
-DB.loggers << Logger.new($stdout)
+DB = Sequel.connect('sqlite://db/amazon_products.db')
 
-DB.create_table? :products do
-  primary_key :id
-  String :title
-  Float :price
-  String :url
-  String :details, text: true
-  DateTime :created_at
-  DateTime :updated_at
+unless DB.table_exists?(:products)
+  DB.create_table :products do
+    String :asin, primary_key: true
+    String :title, null: false
+    Float :price
+    Float :rating
+    Integer :reviews_count
+    String :url, null: false
+    String :image_url
+    DateTime :created_at
+    DateTime :updated_at
+  end
 end

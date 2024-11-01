@@ -44,29 +44,73 @@ class Crawler
       end
 
       products.map do |product|
-      product_url = ensure_full_url(product.css('h2 .a-link-normal').first['href'])
+        begin
+          product_url = ensure_full_url(product.css('h2 .a-link-normal').first&.[]('href'))
+          next unless product_url
 
-      # Extract for product_url
-      product_page = fetch_page(product_url)
-      product_details = scrape_product_details(product_page) if product_page
+          product_page = fetch_page(product_url)
+          product_details = scrape_product_details(product_page) if product_page
 
-      product_data = {
-        asin: product['data-asin'],
-        title: product.css('h2 .a-link-normal span.a-text-normal').text.strip,
-        price: product.css('.a-price .a-offscreen').first&.text,
-        rating: product.css('i.a-icon-star-small .a-icon-alt').first&.text,
-        reviews_count: product.css('span[aria-label*="ocen"]').text.strip,
-        url: product_url,
-        image_url: product.css('.s-image').first['src'],
-        details: product_details || {}
-      }
+          product_data = {
+            asin: product['data-asin'],
+            title: product.css('h2 .a-link-normal span.a-text-normal').text.strip,
+            price: product.css('.a-price .a-offscreen').first&.text,
+            rating: product.css('i.a-icon-star-small .a-icon-alt').first&.text,
+            reviews_count: product.css('span[aria-label*="ocen"]').text.strip,
+            url: product_url,
+            image_url: product.css('.s-image').first&.[]('src'),
+            details: product_details
+          }
 
-      # Check if keyword in
-      keyword.nil? ? product_data : matches_keyword?(product_data, keyword)
-    end.compact # Removes nil entries
-  end
+          # Only proceed if we have the minimum required data
+          next if product_data[:asin].to_s.empty? || product_data[:title].to_s.empty?
+
+          # Check if keyword matches and store
+          result = keyword.nil? ? product_data : matches_keyword?(product_data, keyword)
+          store_product(product_data) if result
+
+          result
+        rescue => e
+          puts "Error processing product: #{e.message}"
+          nil
+        end
+      end.compact
+    end
 
   private
+
+  def store_product(product_data)
+    # Clean and validate the data
+    cleaned_data = {
+      asin: product_data[:asin],
+      title: product_data[:title],
+      price: product_data[:price].to_s.gsub(/[^\d,.]/, ''),  # Clean price string
+      rating: product_data[:rating].to_f,  # Convert to float
+      reviews_count: product_data[:reviews_count].to_i,  # Convert to integer
+      url: product_data[:url],
+      image_url: product_data[:image_url],
+      created_at: Time.now,
+      updated_at: Time.now
+    }
+
+    # Define the update data (excluding created_at)
+    update_data = cleaned_data.dup
+    update_data.delete(:created_at)
+
+    # Only proceed if we have the required fields
+    if cleaned_data[:asin] && cleaned_data[:title]
+      DB[:products].insert_conflict(
+        target: :asin,
+        update: update_data
+      ).insert(cleaned_data)
+    else
+      puts "Error: Missing required fields (ASIN or title)"
+      nil
+    end
+  rescue => e
+    puts "Error storing product: #{e.message}"
+    nil
+  end
 
   def matches_keyword?(product_data, keyword)
     keyword = keyword.downcase
@@ -115,10 +159,10 @@ end
 
 CATEGORY = 's?k=laptops'
 KEYWORD = 'amd ryzen'
-N = 10
+N = 2
 crawler = Crawler.new
 
-results = crawler.scrape_category(CATEGORY, KEYWORD, N)
+results = crawler.scrape_category(CATEGORY,nil, n_searches=N)
 puts "Found #{results.length} products total"
 puts "\nFirst #{N} products:"
 puts "-----------------"
